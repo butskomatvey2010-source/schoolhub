@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SchoolHub — помощь школьникам</title>
+  <meta name="description" content="SchoolHub: видеоуроки, конспекты и тесты для 9–11 классов: биология, география, история Беларуси в контексте всемирной истории, обществоведение.">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif']
+          },
+          boxShadow: {
+            soft: '0 10px 40px -12px rgba(79,70,229,.25)',
+            card: '0 8px 30px -8px rgba(0,0,0,.12)'
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Unbounded:wght@500;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Custom styles -->
+  <style>
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      transition: background .5s ease, color .5s ease;
+    }
+    .font-display {
+      font-family: 'Unbounded', 'Inter', sans-serif;
+    }
+    .blob {
+      filter: blur(90px);
+      opacity: .5;
+      pointer-events: none;
+    }
+    .dark .blob {
+      opacity: .22;
+    }
+    .theme-dot {
+      transition: transform .45s cubic-bezier(.68,-.4,.27,1.4);
+    }
+    .card-subject {
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+      color: #1e293b;
+    }
+    .dark .card-subject {
+      color: #f1f5f9;
+    }
+    .card-subject.active {
+      transform: translateY(-4px) scale(1.02);
+    }
+    .class-btn {
+      transition: transform .2s ease, background .2s ease, border-color .2s ease, color .2s ease;
+      color: #1e293b;
+    }
+    .dark .class-btn {
+      color: #ffffff;
+      background-color: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.14);
+    }
+    .dark .class-btn:hover {
+      border-color: rgba(165,180,252,.7);
+    }
+    .class-btn.active {
+      transform: scale(1.08);
+      color: #ffffff !important;
+      background: linear-gradient(to bottom right, #4f46e5, #7c3aed) !important;
+      border-color: transparent !important;
+    }
+    .para-btn {
+      color: #1e293b;
+    }
+    .dark .para-btn {
+      color: #f1f5f9;
+    }
+    .crumb-btn {
+      color: #475569;
+    }
+    .dark .crumb-btn {
+      color: #e2e8f0;
+    }
+    .crumb-btn.current {
+      color: #ffffff;
+    }
+    /* Контраст инпутов в обеих темах */
+    #subjSearch, #paraSearch {
+      color: #1e293b;
+    }
+    .dark #subjSearch, .dark #paraSearch {
+      color: #ffffff;
+    }
+    #subjSearch::placeholder, #paraSearch::placeholder {
+      color: #94a3b8;
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+    .float {
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes shine {
+      to { background-position: 200% center; }
+    }
+    .shine {
+      background-size: 200% auto;
+      animation: shine 3s linear infinite;
+    }
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #a5b4fc;
+      border-radius: 99px;
+    }
+  </style>
+
+  <!-- Restore theme before paint -->
+  <script>
+    if (
+      localStorage.theme === 'dark' ||
+      (!('theme' in localStorage) && matchMedia('(prefers-color-scheme: dark)').matches)
+    ) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
+</head>
+<body class="bg-[#F6F7FF] dark:bg-[#0B1026] text-slate-800 dark:text-slate-100 min-h-screen overflow-x-hidden">
+
+  <!-- Decorative background -->
+  <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+    <div class="blob absolute -top-20 -left-20 w-[480px] h-[480px] bg-gradient-to-br from-indigo-400 via-violet-400 to-teal-300 rounded-full"></div>
+    <div class="blob absolute top-[35%] -right-32 w-[520px] h-[520px] bg-gradient-to-br from-fuchsia-300 via-indigo-300 to-cyan-300 rounded-full"></div>
+    <div class="blob absolute -bottom-32 left-1/3 w-[420px] h-[420px] bg-gradient-to-br from-teal-200 to-indigo-300 rounded-full"></div>
+  </div>
+
+  <!-- ============ HEADER ============ -->
+  <header class="sticky top-0 z-50 backdrop-blur-xl bg-white/75 dark:bg-[#0B1026]/75 border-b border-slate-200/60 dark:border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-[72px]">
+
+        <!-- Logo -->
+        <a href="#main" class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-600 via-violet-600 to-teal-500 grid place-items-center text-white text-2xl shadow-soft">
+            🎓
+          </div>
+          <div class="leading-tight">
+            <div class="font-display font-bold text-[17px]">SCHOOLHUB</div>
+            <div class="text-[12px] text-slate-500 dark:text-slate-400 font-medium">помощь школьникам</div>
+          </div>
+        </a>
+
+        <!-- Desktop nav -->
+        <nav class="hidden md:flex items-center gap-1 bg-slate-100/70 dark:bg-white/5 rounded-full p-1.5 border border-slate-200/60 dark:border-white/10">
+          <a href="#main" class="px-4 py-2 rounded-full text-sm font-semibold bg-white dark:bg-white/10 shadow">Главная</a>
+          <a href="#about" class="px-4 py-2 rounded-full text-sm font-semibold hover:bg-white dark:hover:bg-white/10 transition">О нас</a>
+          <a href="#support" class="px-4 py-2 rounded-full text-sm font-semibold hover:bg-white dark:hover:bg-white/10 transition">Поддержка</a>
+          <a href="#contacts" class="px-4 py-2 rounded-full text-sm font-semibold hover:bg-white dark:hover:bg-white/10 transition">Контакты</a>
+          <a href="#pricing" class="px-4 py-2 rounded-full text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 hover:opacity-90 transition shadow">💎 Тарифы</a>
+        </nav>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-2">
+          <button id="themeToggle" aria-label="Переключить тему" class="relative w-[68px] h-[36px] rounded-full bg-gradient-to-r from-sky-200 to-indigo-200 dark:from-indigo-950 dark:to-indigo-900 border border-slate-200 dark:border-white/15 overflow-hidden">
+            <span class="absolute left-1.5 top-1/2 -translate-y-1/2 text-[15px]">☀️</span>
+            <span class="absolute right-1.5 top-1/2 -translate-y-1/2 text-[15px]">🌙</span>
+            <span id="themeDot" class="theme-dot absolute top-[3px] left-[3px] w-[28px] h-[28px] rounded-full bg-white dark:bg-[#0B1026] shadow grid place-items-center text-[16px] dark:translate-x-[32px]">🌞</span>
+          </button>
+          <a href="#pricing" class="hidden lg:inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-bold px-5 py-2.5 rounded-full shadow hover:-translate-y-0.5 transition-all">💎 PRO</a>
+          <a href="#constructor" class="hidden sm:inline-flex bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-bold px-5 py-2.5 rounded-full shadow-soft hover:-translate-y-0.5 transition-all">Найти материал ✨</a>
+          <button id="burger" class="md:hidden w-11 h-11 grid place-items-center rounded-xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10">☰</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="md:hidden hidden px-4 pb-4">
+      <div class="rounded-2xl bg-white dark:bg-white/5 border p-2 shadow flex flex-col gap-1">
+        <a href="#main" class="px-4 py-3 rounded-xl font-semibold hover:bg-slate-100 dark:hover:bg-white/10">Главная</a>
+        <a href="#about" class="px-4 py-3 rounded-xl font-semibold hover:bg-slate-100 dark:hover:bg-white/10">О нас</a>
+        <a href="#support" class="px-4 py-3 rounded-xl font-semibold hover:bg-slate-100 dark:hover:bg-white/10">Поддержка</a>
+        <a href="#contacts" class="px-4 py-3 rounded-xl font-semibold hover:bg-slate-100 dark:hover:bg-white/10">Контакты</a>
+        <a href="#pricing" class="px-4 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 text-center">💎 Тарифы PRO</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ MAIN / HERO ============ -->
+  <main id="main" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section class="pt-10 pb-8 lg:pt-16 lg:pb-12 grid lg:grid-cols-2 gap-10 items-center">
+      <div class="reveal visible">
+        <div class="inline-flex items-center gap-2 bg-white dark:bg-white/10 border rounded-full pl-1.5 pr-4 py-1.5 text-[13px] font-semibold shadow-sm mb-5">
+          <span class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-full">NEW</span>
+          Конспекты • Видео • Тесты 9–11 класс
+        </div>
+        <h1 class="font-display font-bold text-[32px] sm:text-[44px] lg:text-[52px] leading-[1.08] tracking-tight">
+          Учёба без стресса и
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-teal-500">зубрёжки</span>
+          📚
+        </h1>
+        <p class="mt-4 text-slate-600 dark:text-slate-300 text-[15px] sm:text-lg max-w-[520px]">
+          Выбери предмет, класс и параграф — откроем видеоурок, конспекты и тест.
+          Всё строго по шагам: сначала предмет, потом класс 9–11, затем параграф.
+        </p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href="#constructor" class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-7 py-3.5 rounded-2xl shadow-soft hover:-translate-y-0.5 transition-all">Подобрать материалы →</a>
+          <a href="#pricing" class="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold px-7 py-3.5 rounded-2xl shadow hover:-translate-y-0.5 transition-all shine">💎 PRO — всё открыто</a>
+          <a href="#about" class="bg-white dark:bg-white/10 border font-bold px-7 py-3.5 rounded-2xl shadow-sm hover:-translate-y-0.5 transition-all">Как это работает</a>
+        </div>
+        <div class="mt-7 flex items-center gap-5 text-[13px] font-semibold text-slate-500 dark:text-slate-400">
+          <div class="flex -space-x-2">
+            <span class="w-9 h-9 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 border-2 border-white grid place-items-center text-white text-sm">А</span>
+            <span class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-400 to-blue-600 border-2 border-white grid place-items-center text-white text-sm">М</span>
+            <span class="w-9 h-9 rounded-full bg-slate-900 text-white border-2 border-white grid place-items-center text-[11px]">12k+</span>
+          </div>
+          <span>⭐ 4.9 · помогают 12 400 школьникам</span>
+        </div>
+      </div>
+      <div class="relative reveal visible">
+        <div class="float relative bg-white/80 dark:bg-white/[.06] backdrop-blur-xl border rounded-[2rem] p-6 sm:p-8 shadow-soft">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="w-3 h-3 rounded-full bg-rose-400"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+            <span class="ml-auto text-[12px] font-bold text-slate-400">schoolhub</span>
+          </div>
+          <div class="rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 text-white p-5 mb-4">
+            <div class="text-[12px] font-bold opacity-80 uppercase tracking-wider">Сейчас повторяешь</div>
+            <div class="font-display font-bold text-lg mt-1">Биология · 9 класс · Генетика</div>
+            <div class="mt-3 h-2.5 rounded-full bg-white/25 overflow-hidden">
+              <div id="demoBar" class="h-full w-[12%] rounded-full bg-gradient-to-r from-teal-300 to-emerald-300 transition-all duration-1000"></div>
+            </div>
+            <div class="mt-2 text-[12px] font-semibold opacity-90"><span id="demoPct">12%</span> · осталось 20 минут ✨</div>
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="rounded-2xl bg-slate-50 dark:bg-white/5 border p-3 text-center">
+              <div class="text-2xl">📝</div>
+              <div class="font-extrabold text-lg">340+</div>
+              <div class="text-[11px] font-semibold text-slate-500">конспектов</div>
+            </div>
+            <div class="rounded-2xl bg-slate-50 dark:bg-white/5 border p-3 text-center">
+              <div class="text-2xl">🎬</div>
+              <div class="font-extrabold text-lg">120+</div>
+              <div class="text-[11px] font-semibold text-slate-500">видеоуроков</div>
+            </div>
+            <div class="rounded-2xl bg-slate-50 dark:bg-white/5 border p-3 text-center">
+              <div class="text-2xl">✅</div>
+              <div class="font-extrabold text-lg">1 200+</div>
+              <div class="text-[11px] font-semibold text-slate-500">тестов</div>
+            </div>
+          </div>
+        </div>
+        <div class="absolute -left-4 top-8 bg-white dark:bg-[#151b3a] rounded-2xl shadow-card border px-4 py-3 text-[13px] font-bold float">🎯 Тест пройден на 9/10</div>
+        <div class="absolute -right-3 bottom-8 bg-white dark:bg-[#151b3a] rounded-2xl shadow-card border px-4 py-3 text-[13px] font-bold float">🔥 7 дней подряд!</div>
+      </div>
+    </section>
+
+
+    <!-- Constructor: steps -->
+    <section id="constructor" class="reveal py-8">
+      <div class="bg-white/85 dark:bg-white/[.05] backdrop-blur-xl border rounded-[2rem] shadow-soft overflow-hidden">
+        <div class="bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 p-6 sm:p-8 text-white">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 class="font-display font-bold text-xl sm:text-2xl">🧭 Конструктор материалов</h2>
+              <p class="text-white/80 text-sm mt-1 font-medium">4 шага — предмет → класс → параграф → материалы</p>
+            </div>
+            <div class="flex items-center gap-2 text-[12px] font-bold">
+              <span id="dot1" class="w-8 h-8 grid place-items-center rounded-full bg-white text-indigo-700">1</span>
+              <span class="w-6 h-[3px] bg-white/40 rounded-full"></span>
+              <span id="dot2" class="w-8 h-8 grid place-items-center rounded-full bg-white/25 text-white">2</span>
+              <span class="w-6 h-[3px] bg-white/40 rounded-full"></span>
+              <span id="dot3" class="w-8 h-8 grid place-items-center rounded-full bg-white/25 text-white">3</span>
+              <span class="w-6 h-[3px] bg-white/40 rounded-full"></span>
+              <span id="dot4" class="w-8 h-8 grid place-items-center rounded-full bg-white/25 text-white">4</span>
+            </div>
+          </div>
+          <div class="mt-4 h-2 rounded-full bg-white/25 overflow-hidden">
+            <div id="progress" class="h-full w-1/4 bg-gradient-to-r from-teal-300 to-emerald-300 rounded-full transition-all duration-500"></div>
+          </div>
+          <div id="crumbs" class="mt-4 flex flex-wrap items-center gap-2 text-[12px] font-bold"></div>
+        </div>
+        <div class="p-6 sm:p-8">
+          <div id="step1">
+            <div class="flex items-center justify-between mb-4 gap-3 flex-wrap">
+              <h3 class="font-bold text-lg">Шаг 1. Выбери предмет</h3>
+              <input id="subjSearch" placeholder="🔍 Поиск..." class="text-sm bg-slate-100 dark:bg-white/10 rounded-full px-4 py-2 w-[170px] outline-none border border-transparent focus:border-indigo-400">
+            </div>
+            <div id="subjGrid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+          </div>
+          <div id="step2" class="hidden">
+            <h3 class="font-bold text-lg mb-1">Шаг 2. Выбери класс</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Для <b id="selSubjName">—</b> доступны только 9–11 классы</p>
+            <div id="classGrid" class="grid grid-cols-3 gap-2.5 max-w-md"></div>
+            <button data-back="1" class="backBtn mt-6 px-5 py-2.5 rounded-xl font-bold bg-slate-100 dark:bg-white/10 dark:text-white text-sm">← Назад к предметам</button>
+          </div>
+          <div id="step3" class="hidden">
+            <h3 class="font-bold text-lg mb-1">Шаг 3. Выбери параграф</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-4"><b id="selInfo">—</b></p>
+            <input id="paraSearch" placeholder="🔍 Поиск параграфа..." class="mb-4 text-sm bg-slate-100 dark:bg-white/10 rounded-full px-4 py-2 w-full sm:w-[260px] outline-none border border-transparent focus:border-indigo-400">
+            <div id="paraGrid" class="grid sm:grid-cols-2 gap-3"></div>
+            <button data-back="2" class="backBtn mt-6 px-5 py-2.5 rounded-xl font-bold bg-slate-100 dark:bg-white/10 dark:text-white text-sm">← Назад к классам</button>
+          </div>
+          <div id="step4" class="hidden">
+            <h3 class="font-bold text-lg mb-1">Шаг 4. Что открываем?</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-4"><b id="selParaInfo">—</b></p>
+            <div id="matGrid" class="grid sm:grid-cols-2 gap-3"></div>
+            <button data-back="3" class="backBtn mt-6 px-5 py-2.5 rounded-xl font-bold bg-slate-100 dark:bg-white/10 dark:text-white text-sm">← Назад к параграфам</button>
+          </div>
+          <div id="stepResult" class="hidden">
+            <div class="rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 p-6 text-center">
+              <div id="resultEmoji" class="text-5xl mb-2">🎉</div>
+              <h3 id="resultTitle" class="font-display font-bold text-xl">Материал готов!</h3>
+              <p id="resultText" class="mt-2 font-medium text-slate-600 dark:text-slate-300"></p>
+              <div id="resultBody" class="mt-4 text-left rounded-2xl bg-white dark:bg-white/5 border p-5 text-sm leading-relaxed"></div>
+              <div id="resultChips" class="flex flex-wrap justify-center gap-2 mt-4"></div>
+              <div class="flex flex-wrap justify-center gap-3 mt-6">
+                <button data-back="4" class="backBtn bg-white dark:bg-white/10 border font-bold px-6 py-3 rounded-2xl dark:text-white text-sm">← К выбору формата</button>
+                <button id="goBtn" class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold px-7 py-3 rounded-2xl shadow">Открыть полностью →</button>
+                <button id="resetBtn" class="bg-white dark:bg-white/10 border font-bold px-6 py-3 rounded-2xl dark:text-white text-sm">Выбрать заново</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- About: 3 features -->
+    <section id="about" class="reveal py-8">
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="bg-white/85 dark:bg-white/[.05] border rounded-3xl p-6 shadow-card hover:-translate-y-1 transition-all">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-500 grid place-items-center text-2xl mb-3">📚</div>
+          <h3 class="font-bold text-lg">Всё по программе</h3>
+          <p class="text-sm text-slate-500 mt-1">Только 4 предмета: биология, география, история Беларуси в контексте всемирной истории и обществоведение. Всё разложено по классам 9–11.</p>
+        </div>
+        <div class="bg-white/85 dark:bg-white/[.05] border rounded-3xl p-6 shadow-card hover:-translate-y-1 transition-all">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-400 to-emerald-500 grid place-items-center text-2xl mb-3">⚡</div>
+          <h3 class="font-bold text-lg">Быстро и понятно</h3>
+          <p class="text-sm text-slate-500 mt-1">Видеоуроки, подробные и краткие конспекты и тесты с автопроверкой. Готовься за 15 минут.</p>
+        </div>
+        <div class="bg-white/85 dark:bg-white/[.05] border rounded-3xl p-6 shadow-card hover:-translate-y-1 transition-all">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-pink-500 grid place-items-center text-2xl mb-3">🌙</div>
+          <h3 class="font-bold text-lg">Комфорт вечером</h3>
+          <p class="text-sm text-slate-500 mt-1">Тёмная тема бережёт глаза. Подписка и прогресс сохраняются в браузере.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ / Support -->
+    <section id="support" class="reveal py-4">
+      <div class="bg-white/85 dark:bg-white/[.05] border rounded-[2rem] p-6 sm:p-8 shadow-soft">
+        <h2 class="font-display font-bold text-xl sm:text-2xl">❓ Частые вопросы</h2>
+        <div class="grid md:grid-cols-2 gap-3 mt-5">
+          <details open class="rounded-2xl bg-slate-50 dark:bg-white/5 border p-4">
+            <summary class="font-bold cursor-pointer text-[15px]">Что открывает подписка?</summary>
+            <p class="text-sm text-slate-500 mt-2">Абсолютно все видеоуроки, конспекты и тесты по 4 предметам для 9–11 классов, без лимитов.</p>
+          </details>
+          <details class="rounded-2xl bg-slate-50 dark:bg-white/5 border p-4">
+            <summary class="font-bold cursor-pointer text-[15px]">Сколько стоит?</summary>
+            <p class="text-sm text-slate-500 mt-2">X рублей в месяц или Y рублей навсегда. Выбери удобный вариант в разделе тарифов.</p>
+          </details>
+          <details class="rounded-2xl bg-slate-50 dark:bg-white/5 border p-4">
+            <summary class="font-bold cursor-pointer text-[15px]">Как идти по шагам?</summary>
+            <p class="text-sm text-slate-500 mt-2">Строго по очереди: выбери предмет → класс 9–11 → параграф → один из 4 форматов: видеоурок, подробный план-конспект, краткий конспект или тест. Вернуться назад можно кнопкой «Назад» или хлебными крошками сверху — начинать сначала не нужно.</p>
+          </details>
+          <details class="rounded-2xl bg-slate-50 dark:bg-white/5 border p-4">
+            <summary class="font-bold cursor-pointer text-[15px]">Можно ли отменить подписку?</summary>
+            <p class="text-sm text-slate-500 mt-2">Да, месячную — в любой момент. Пожизненная остаётся навсегда.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="reveal py-8">
+      <div class="text-center max-w-2xl mx-auto mb-6">
+        <div class="inline-flex items-center gap-2 bg-amber-100 dark:bg-amber-950 border border-amber-200 rounded-full px-4 py-1.5 text-[13px] font-bold text-amber-700 mb-3">
+          💎 SCHOOLHUB PRO · безлимит на учёбу
+        </div>
+        <h2 class="font-display font-bold text-2xl sm:text-3xl">
+          Открой <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500">ВСЁ</span> одной подпиской 🚀
+        </h2>
+        <p class="text-sm text-slate-500 mt-2">Все видеоуроки, конспекты и тесты. Дешевле одного занятия с репетитором.</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-4 items-stretch">
+        <div class="bg-white/85 dark:bg-white/[.05] border rounded-3xl p-6 shadow-card flex flex-col">
+          <div class="font-bold text-slate-500 text-sm">СТАРТ</div>
+          <div class="mt-1"><span class="font-display font-bold text-3xl">0</span><span class="font-bold text-slate-400"> ₽</span></div>
+          <p class="text-[13px] text-slate-500 mt-1">Бесплатно навсегда</p>
+          <ul class="text-[13px] font-medium space-y-2 mt-4 flex-1">
+            <li>✅ Демо-конспекты и демо-видео</li>
+            <li>✅ 5 тестов в месяц</li>
+            <li>❌ Все видеоуроки</li>
+            <li>❌ Безлимит конспектов</li>
+          </ul>
+          <button onclick="toast('👋 У тебя уже есть Старт!')" class="mt-5 w-full font-bold py-3 rounded-2xl bg-slate-100 dark:bg-white/10 text-sm">Текущий план</button>
+        </div>
+        <div class="relative bg-gradient-to-b from-slate-900 to-indigo-950 text-white rounded-3xl p-6 shadow-soft border-2 border-amber-400 flex flex-col md:-my-3 md:py-9">
+          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-orange-500 text-slate-900 text-[12px] font-extrabold px-4 py-1.5 rounded-full shadow whitespace-nowrap">🔥 ХИТ</div>
+          <div class="font-bold text-amber-300 text-sm mt-2">👑 PRO · МЕСЯЦ</div>
+          <div class="mt-1"><span class="font-display font-bold text-4xl">X</span><span class="font-bold text-white/60"> ₽/мес</span></div>
+          <p class="text-[13px] text-white/70 mt-1">Всё включено · отмена anytime</p>
+          <ul class="text-[13px] font-medium space-y-2 mt-4 flex-1">
+            <li>⚡ <b>Безлимит:</b> все материалы 9–11 класс</li>
+            <li>🎬 <b>Все видеоуроки</b> по всем параграфам</li>
+            <li>✅ Все тесты с разборами</li>
+            <li>📊 Личная статистика</li>
+          </ul>
+          <button data-pro="month" class="proBtn mt-5 w-full font-extrabold py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 shine text-slate-900 text-sm">💎 Забрать PRO за X ₽ →</button>
+        </div>
+        <div class="bg-white/85 dark:bg-white/[.05] border rounded-3xl p-6 shadow-card flex flex-col">
+          <div class="font-bold text-slate-500 text-sm">PRO НАВСЕГДА</div>
+          <div class="mt-1"><span class="font-display font-bold text-3xl">Y</span><span class="font-bold text-slate-400"> ₽</span></div>
+          <p class="text-[13px] text-emerald-600 font-bold mt-1">один платёж · доступ навсегда</p>
+          <ul class="text-[13px] font-medium space-y-2 mt-4 flex-1">
+            <li>👑 Всё из PRO Месяц</li>
+            <li>♾️ Доступ навсегда, без продлений</li>
+            <li>🎁 Все будущие материалы</li>
+            <li>🏅 Значок основателя</li>
+          </ul>
+          <button data-pro="life" class="proBtn mt-5 w-full font-bold py-3 rounded-2xl border-2 border-amber-400 text-amber-600 text-sm">♾️ Взять навсегда за Y ₽ →</button>
+        </div>
+      </div>
+      <div class="text-center mt-5 text-[12px] font-semibold text-slate-400">
+        🔒 Оплата картой · возврат 7 дней · ⭐ 4.9 · 3 200+ PRO-учеников
+      </div>
+    </section>
+
+    <!-- Contacts -->
+    <section id="contacts" class="reveal py-8">
+      <div class="grid lg:grid-cols-2 gap-4">
+        <div class="bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 rounded-[2rem] p-7 sm:p-9 text-white shadow-soft">
+          <h2 class="font-display font-bold text-xl sm:text-2xl">💌 Свяжись с нами</h2>
+          <p class="text-white/80 text-sm mt-2">Поддержка отвечает в течение дня.</p>
+          <div class="mt-5 space-y-3 text-sm font-semibold">
+            <div class="bg-white/15 rounded-2xl px-4 py-3">📧 help@schoolhub.by</div>
+            <div class="bg-white/15 rounded-2xl px-4 py-3">💬 Telegram: @schoolhub_help</div>
+            <div class="bg-white/15 rounded-2xl px-4 py-3">📍 Онлайн · для всей страны</div>
+          </div>
+        </div>
+        <form id="contactForm" class="bg-white/85 dark:bg-white/[.05] border rounded-[2rem] p-7 sm:p-9 shadow-soft">
+          <label class="text-sm font-bold">Твоё имя</label>
+          <input required placeholder="Например, Алина" class="mt-1.5 mb-4 w-full rounded-2xl bg-slate-100 dark:bg-white/10 px-4 py-3 text-sm outline-none border border-transparent focus:border-indigo-400">
+          <label class="text-sm font-bold">Сообщение</label>
+          <textarea required rows="4" placeholder="В чём помочь?.." class="mt-1.5 w-full rounded-2xl bg-slate-100 dark:bg-white/10 px-4 py-3 text-sm resize-none outline-none border border-transparent focus:border-indigo-400"></textarea>
+          <button class="mt-4 w-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold py-3.5 rounded-2xl shadow-soft">Отправить ✈️</button>
+          <p id="formOk" class="hidden mt-3 text-sm font-bold text-emerald-600 text-center">✅ Отправлено! Ответим совсем скоро.</p>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-200/70 dark:border-white/10 mt-4">
+    <div class="max-w-7xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-500">
+      <div class="font-bold">SCHOOLHUB · сделано с 💜 для школьников</div>
+      <div class="flex gap-4 font-semibold">
+        <a href="#main" class="hover:text-indigo-500">Главная</a>
+        <a href="#about" class="hover:text-indigo-500">О нас</a>
+        <a href="#support" class="hover:text-indigo-500">Поддержка</a>
+      </div>
+      <div>© 2026 · v2.0</div>
+    </div>
+  </footer>
+
+  <!-- PRO modal -->
+  <div id="proModal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+    <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm" data-close="1"></div>
+    <div class="modal-card relative w-full max-w-md bg-white dark:bg-[#151b3a] rounded-[1.8rem] p-7 shadow-2xl border border-amber-200 scale-95 transition-all duration-300">
+      <button data-close="1" class="absolute top-4 right-4 w-9 h-9 grid place-items-center rounded-full bg-slate-100 dark:bg-white/10 font-bold">✕</button>
+      <div class="text-center">
+        <div class="text-5xl mb-2">👑</div>
+        <h3 id="proTitle" class="font-display font-bold text-xl">PRO Месяц — X ₽</h3>
+        <p class="text-sm text-slate-500 mt-1">Остался один шаг до безлимита 🎉</p>
+        <div class="grid grid-cols-3 gap-2 mt-4 text-[12px] font-bold">
+          <div class="rounded-xl bg-emerald-50 border border-emerald-200 p-2">📝<br>Конспекты</div>
+          <div class="rounded-xl bg-indigo-50 border border-indigo-200 p-2">🎬<br>Видео</div>
+          <div class="rounded-xl bg-amber-50 border border-amber-200 p-2">✅<br>Тесты</div>
+        </div>
+        <input id="proMail" placeholder="📧 Твой e-mail" class="mt-4 w-full rounded-2xl bg-slate-100 dark:bg-white/10 px-4 py-3 text-sm outline-none border border-transparent focus:border-amber-400">
+        <button id="proPay" class="mt-3 w-full font-extrabold py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 text-slate-900 text-sm">💳 Оплатить · возврат 7 дней</button>
+        <p class="text-[11px] text-slate-400 font-semibold mt-2">Демо-режим: оплата не списывается</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCRIPTS ============ -->
+
+  <!-- UI: theme, menu, animations, contact form -->
+  <script>
+    // Short helpers
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => document.querySelectorAll(s);
+
+    // Toast notification
+    function toast(msg) {
+      const t = $('#toast');
+      t.textContent = msg;
+      t.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => t.classList.add('translate-y-24', 'opacity-0'), 2600);
+    }
+
+    // --- Theme toggle ---
+    const toggle = $('#themeToggle');
+    const dot = $('#themeDot');
+
+    function syncIcon() {
+      const dark = document.documentElement.classList.contains('dark');
+      dot.textContent = dark ? '🌙' : '🌞';
+    }
+    syncIcon();
+
+    toggle.onclick = () => {
+      const dark = document.documentElement.classList.toggle('dark');
+      localStorage.theme = dark ? 'dark' : 'light';
+      syncIcon();
+      toast(dark ? '🌙 Тёмная тема включена' : '☀️ Светлая тема включена');
+    };
+
+    // --- Mobile menu ---
+    $('#burger').onclick = () => $('#mobileMenu').classList.toggle('hidden');
+    $$('#mobileMenu a').forEach((a) => {
+      a.onclick = () => $('#mobileMenu').classList.add('hidden');
+    });
+
+    // --- Reveal on scroll ---
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((x) => x.isIntersecting && x.target.classList.add('visible')),
+      { threshold: 0.12 }
+    );
+    $$('.reveal').forEach((el) => io.observe(el));
+
+    // --- Demo progress bar ---
+    let pct = 12;
+    setInterval(() => {
+      pct = pct >= 86 ? 12 : pct + 7;
+      const bar = $('#demoBar');
+      if (bar) {
+        bar.style.width = pct + '%';
+        $('#demoPct').textContent = pct + '%';
+      }
+    }, 1600);
+
+    // --- Contact form ---
+    $('#contactForm').onsubmit = (e) => {
+      e.preventDefault();
+      $('#formOk').classList.remove('hidden');
+      toast('✈️ Сообщение отправлено!');
+      e.target.reset();
+      setTimeout(() => $('#formOk').classList.add('hidden'), 4000);
+    };
+  </script>
+
+  <!-- Constructor logic: catalog + steps -->
+  <script src="konspekty-istoriya-11.js"></script>
+  <script src="plany-istoriya-11.js"></script>
+  <script>
+    // Только 4 предмета: биология, география, история Беларуси в контексте всемирной истории, обществоведение.
+    const SUBJECTS = [
+      { n: 'Биология', e: '🧬', g: 'from-lime-400 to-emerald-600' },
+      { n: 'География', e: '🌍', g: 'from-teal-400 to-cyan-600' },
+      { n: 'История Беларуси в контексте всемирной истории', e: '🏛️', g: 'from-stone-400 to-amber-600' },
+      { n: 'Обществоведение', e: '🤝', g: 'from-amber-300 to-orange-500' }
+    ];
+    const GRADES = [9, 10, 11];
+
+    // Wizard state: предмет → класс → параграф → формат
+    const state = { subject: null, grade: null, para: null, format: null };
+
+    // Параграфы по 4 предметам × 3 класса. Легко расширить или подключить БД.
+    const PARAGRAPHS = {
+      'Биология|9': [
+        { t: '§1. Клетка — единица жизни', d: 'Строение и функции органоидов' },
+        { t: '§2. Генетика: законы Менделя', d: 'Моногибридное и дигибридное скрещивание' },
+        { t: '§3. Изменчивость и наследственность', d: 'Мутации, комбинации, селекция' },
+        { t: '§4. Эволюция органического мира', d: 'Теория Дарвина, доказательства' },
+        { t: '§5. Экология и экосистемы', d: 'Цепи питания, биосфера' },
+        { t: '§6. Человек: нервная система', d: 'Рефлексы, мозг, гигиена' }
+      ],
+      'Биология|10': [
+        { t: '§1. Химический состав клетки', d: 'Белки, жиры, углеводы, ДНК' },
+        { t: '§2. Фотосинтез и обмен веществ', d: 'Световая и темновая фазы' },
+        { t: '§3. Деление клетки: митоз и мейоз', d: 'Фазы, значение, сравнение' },
+        { t: '§4. Онтогенез и размножение', d: 'Эмбриональный период' },
+        { t: '§5. Селекция и биотехнологии', d: 'Сорта, породы, ГМО' },
+        { t: '§6. Вирусы и бактерии', d: 'Строение, профилактика' }
+      ],
+      'Биология|11': [
+        { t: '§1. Популяции и виды', d: 'Критерии вида, структура' },
+        { t: '§2. Антропогенез', d: 'Происхождение человека' },
+        { t: '§3. Экосистемы и сукцессии', d: 'Биогеоценозы' },
+        { t: '§4. Биосфера и Вернадский', d: 'Живое вещество' },
+        { t: '§5. Глобальные экопроблемы', d: 'Климат, загрязнение' },
+        { t: '§6. Основы здорового образа жизни', d: 'Итоговое повторение' }
+      ],
+      'География|9': [
+        { t: '§1. Политическая карта мира', d: 'Страны, столицы, регионы' },
+        { t: '§2. Природные ресурсы мира', d: 'Минеральные, водные, лесные' },
+        { t: '§3. Население мира', d: 'Численность, миграции, урбанизация' },
+        { t: '§4. Мировое хозяйство', d: 'Отрасли, ТНК, интеграция' },
+        { t: '§5. Европа: общая характеристика', d: 'Природа, хозяйство, культура' },
+        { t: '§6. Азия и Америка: обзор', d: 'Крупнейшие страны' }
+      ],
+      'География|10': [
+        { t: '§1. География как наука', d: 'Методы, карты, ГИС' },
+        { t: '§2. Литосфера и рельеф', d: 'Плиты, горы, равнины' },
+        { t: '§3. Атмосфера и климат', d: 'Пояса, осадки, погода' },
+        { t: '§4. Гидросфера и океан', d: 'Течения, воды суши' },
+        { t: '§5. Биосфера и почвы', d: 'Природные зоны' },
+        { t: '§6. Природопользование', d: 'Охрана природы' }
+      ],
+      'География|11': [
+        { t: '§1. Регионы мира', d: 'Европа, Азия, Африка' },
+        { t: '§2. Глобализация экономики', d: 'Торговля, транспорт' },
+        { t: '§3. География населения', d: 'Демография, города' },
+        { t: '§4. Экологические проблемы', d: 'Изменение климата' },
+        { t: '§5. Устойчивое развитие', d: 'Цели ООН' },
+        { t: '§6. Итоговое повторение', d: 'Карты и тесты' }
+      ],
+      'История Беларуси в контексте всемирной истории|9': [
+        { t: '§1. Россия в начале XX века', d: 'Реформы, революция 1905 г.' },
+        { t: '§2. Первая мировая война', d: 'Причины, ход, итоги' },
+        { t: '§3. Революции 1917 года', d: 'Февраль и Октябрь' },
+        { t: '§4. СССР в 1920–1930-е годы', d: 'НЭП, индустриализация' },
+        { t: '§5. Великая Отечественная война', d: '1941–1945: этапы и герои' },
+        { t: '§6. СССР после войны', d: 'Оттепель, застой, перестройка' }
+      ],
+      'История Беларуси в контексте всемирной истории|10': [
+        { t: '§1. Древний мир', d: 'Египет, Греция, Рим' },
+        { t: '§2. Средневековье', d: 'Феодализм, крестовые походы' },
+        { t: '§3. Новое время XVI–XVII вв.', d: 'Реформация, открытия' },
+        { t: '§4. Эпоха Просвещения', d: 'Революции XVIII века' },
+        { t: '§5. XIX век: империи', d: 'Наполеон, индустриализация' },
+        { t: '§6. Мир в начале XX века', d: 'Колонии, союзы' }
+      ],
+      'История Беларуси в контексте всемирной истории|11': [
+        { t: '§1. XIX век в истории мира и Беларуси', d: 'Модернизация, Венская система, деполонизация' },
+        { t: '§2. Промышленная революция', d: 'Переход к машинному производству, урбанизация' },
+        { t: '§3. Революции и национальные движения в мире', d: 'Идеологии, «Весна народов», объединение Италии' },
+        { t: '§4. Особенности развития стран Запада и Востока во второй половине XIX — начале ХХ в.', d: 'Вторая промреволюция, империализм, блоки' },
+        { t: '§5. Российская империя в XIX — начале XX в.', d: 'Самодержавие, Великие реформы, Дума' },
+        { t: '§6. Беларусь в составе Российской империи в начале ХІХ в.', d: 'Губернии, унификация, Статут 1840 г.' },
+        { t: '§7. Развитие сельского хозяйства Беларуси в ХІХ — начале ХХ в.', d: 'Реформы Киселёва, 1861 г., Столыпин' },
+        { t: '§8. Беларусь на пути к индустриальному обществу', d: 'Фабрики, железные дороги, банки' },
+        { t: '§9. Социальные последствия промышленной революции в Беларуси', d: 'Буржуазия, пролетариат, урбанизация' },
+        { t: '§10. Общественно-политические движения в Беларуси в ХІХ в.', d: 'Декабристы, народники, «Гомон»' },
+        { t: '§11. Общественно-политическая борьба в Беларуси в начале ХХ в.', d: 'Партии, революция 1905–1907 гг., «Наша ніва»' },
+        { t: '§12. От белорусской народности к белорусской нации', d: 'Белорусоведение, самосознание, идея' },
+        { t: '§13. Белорусское общество в начале ХХ в.', d: 'Сословия, демография, города' },
+        { t: '§14. Развитие культуры Беларуси в XIX — начале ХХ в.', d: 'Образование, театр, живопись' },
+        { t: '§15. Первая мировая война как рубежный период мировой истории', d: 'Причины, блоки, итоги 1914–1918 гг.' },
+        { t: '§16. Беларусь в годы Первой мировой войны', d: 'Мобилизация, беженство, Свенцянский прорыв' },
+        { t: '§17. Тенденции исторического развития в 1917–1945 гг.', d: 'Революции, фашизм, НЭП' },
+        { t: '§18. Беларусь в Февральской и Октябрьской революциях 1917 г.', d: 'Февраль, Октябрь, Всебелорусский съезд' },
+        { t: '§19. Страны Запада в межвоенный период', d: 'Версаль, Лига Наций, кризис 1929 г.' },
+        { t: '§20. Страны Азии, Африки и Латинской Америки в межвоенный период', d: 'Ганди, Сунь Ятсен, Кемаль' },
+        { t: '§21. Советское государственное строительство в 1917–1939 гг.', d: 'Военный коммунизм, НЭП, индустриализация' },
+        { t: '§22. Национально-государственное строительство в Беларуси', d: 'БНР, ССРБ, укрупнения, 1939 г.' },
+        { t: '§23. Социально-экономическое развитие БССР в 1920–1930-е гг.', d: 'НЭП, белорусизация, пятилетки' },
+        { t: '§24. Западная Беларусь в 1921–1939 гг.', d: 'Рижский мир, полонизация, КПЗБ' },
+        { t: '§25. Развитие культуры Советской Беларуси в межвоенный период', d: 'Ликбез, БГУ, Академия наук' },
+        { t: '§26. Международное положение накануне Второй мировой войны', d: 'Умиротворение, Мюнхен, пакт 1939 г.' }
+      ],
+      'Обществоведение|9': [
+        { t: '§1. Человек и общество', d: 'Социализация, личность' },
+        { t: '§2. Духовная культура', d: 'Наука, образование, религия' },
+        { t: '§3. Экономика: основы', d: 'Рынок, спрос, бюджет' },
+        { t: '§4. Социальные отношения', d: 'Семья, группы, конфликты' },
+        { t: '§5. Политика и власть', d: 'Государство, выборы' },
+        { t: '§6. Право и Конституция', d: 'Права и обязанности' }
+      ],
+      'Обществоведение|10': [
+        { t: '§1. Общество как система', d: 'Сферы, институты' },
+        { t: '§2. Познание и истина', d: 'Наука, мышление' },
+        { t: '§3. Экономика и предпринимательство', d: 'Фирмы, банки' },
+        { t: '§4. Социальная стратификация', d: 'Статусы, мобильность' },
+        { t: '§5. Политическая система', d: 'Партии, лидеры' },
+        { t: '§6. Правовое государство', d: 'Законы, суд' }
+      ],
+      'Обществоведение|11': [
+        { t: '§1. Человек и деятельность', d: 'Цели, мотивы, труд' },
+        { t: '§2. Экономика: макроуровень', d: 'ВВП, инфляция, налоги' },
+        { t: '§3. Социальные процессы', d: 'Миграции, молодёжь' },
+        { t: '§4. Демократия и выборы', d: 'Избирательные системы' },
+        { t: '§5. Конституционное право', d: 'Разбор статей' },
+        { t: '§6. Подготовка к ЕГЭ/ЦТ', d: 'Задания и эссе' }
+      ]
+    };
+
+    function getParagraphs(subj, grade) {
+      return PARAGRAPHS[subj + '|' + grade] || [];
+    }
+
+    // 4 формата материалов для любого параграфа
+    function getMaterials() {
+      return [
+        { k: 'video', e: '🎬', t: 'Видеоурок', d: 'Смотреть объяснение темы · 10–15 мин' },
+        { k: 'plan', e: '📝', t: 'План-конспект (подробный)', d: 'Вся теория по пунктам с примерами' },
+        { k: 'short', e: '⚡', t: 'Краткий конспект', d: 'Главное за 5 минут для повторения' },
+        { k: 'test', e: '✅', t: 'Тест для закрепления', d: '10 вопросов с автопроверкой' }
+      ];
+    }
+
+    // Навигация строго по очереди: 1 предмет → 2 класс → 3 параграф → 4 материалы → 5 результат
+    function goStep(n) {
+      ['step1', 'step2', 'step3', 'step4', 'stepResult'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+      const target = n === 5 ? 'stepResult' : 'step' + n;
+      document.getElementById(target).classList.remove('hidden');
+      const done = n === 5 ? 4 : n;
+      document.getElementById('progress').style.width = (done / 4 * 100) + '%';
+      [['dot1', 1], ['dot2', 2], ['dot3', 3], ['dot4', 4]].forEach(([id, k]) => {
+        const d = document.getElementById(id);
+        if (!d) return;
+        const on = done >= k;
+        d.className = 'w-8 h-8 grid place-items-center rounded-full font-bold ' +
+          (on ? 'bg-white text-indigo-700' : 'bg-white/25 text-white');
+      });
+      renderCrumbs(n);
+      document.getElementById('constructor').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function shortPara(t) {
+      return t.length > 26 ? t.slice(0, 26) + '…' : t;
+    }
+
+    // Хлебные крошки: вернуться на любой пройденный шаг, не начиная сначала
+    function renderCrumbs(n) {
+      const box = document.getElementById('crumbs');
+      if (!box) return;
+      const cur = n === 5 ? 4 : n;
+      const items = [
+        { n: 1, label: '📚 ' + (state.subject || 'Предмет'), can: true },
+        { n: 2, label: state.grade ? state.grade + ' класс' : 'Класс', can: !!state.subject },
+        { n: 3, label: '📄 ' + (state.para ? shortPara(state.para) : 'Параграф'), can: !!state.grade },
+        { n: 4, label: '🎬 Материалы', can: !!state.para }
+      ];
+      box.innerHTML = '';
+      items.forEach((it, i) => {
+        const b = document.createElement('button');
+        const isCur = it.n === cur;
+        b.className = 'crumb-btn px-3.5 py-1.5 rounded-full text-[12px] font-bold transition ' +
+          (isCur ? 'current bg-white/30 ring-1 ring-white/60'
+            : (it.can ? 'bg-white/15 hover:bg-white/30 text-white' : 'bg-white/10 opacity-60 cursor-not-allowed'));
+        b.textContent = (isCur ? '● ' : '') + it.label;
+        if (it.can && !isCur) b.onclick = () => goStep(it.n);
+        box.appendChild(b);
+        if (i < items.length - 1) {
+          const s = document.createElement('span');
+          s.className = 'text-white/50 font-bold';
+          s.textContent = '→';
+          box.appendChild(s);
+        }
+      });
+    }
+
+    // Step 1: subject cards + search (только 4 предмета)
+    function renderSubjects(filter = '') {
+      const grid = $('#subjGrid');
+      grid.innerHTML = '';
+      SUBJECTS
+        .filter((s) => s.n.toLowerCase().includes(filter.toLowerCase()))
+        .forEach((s) => {
+          const b = document.createElement('button');
+          b.className = 'card-subject text-left rounded-2xl border-2 p-3.5 bg-slate-50 dark:bg-white/5 ' +
+            (state.subject === s.n ? 'active !border-indigo-500 ring-2 ring-indigo-200' : 'border-slate-100 dark:border-white/10 hover:border-indigo-300');
+          b.innerHTML = '<div class="w-10 h-10 rounded-xl bg-gradient-to-br ' + s.g +
+            ' grid place-items-center text-xl mb-2">' + s.e + '</div>' +
+            '<div class="font-bold text-[13px]">' + s.n + '</div>';
+          b.onclick = () => {
+            state.subject = s.n;
+            state.grade = null;
+            state.para = null;
+            state.format = null;
+            $('#selSubjName').textContent = s.n;
+            renderSubjects($('#subjSearch').value);
+            renderClasses();
+            goStep(2);
+            toast('📚 ' + s.n);
+          };
+          grid.appendChild(b);
+        });
+      if (!grid.children.length) {
+        grid.innerHTML = '<div class="col-span-full text-center text-sm text-slate-400 py-6">Ничего не найдено 😕</div>';
+      }
+    }
+    $('#subjSearch').oninput = (e) => renderSubjects(e.target.value);
+
+    // Step 2: только 9, 10, 11 — контрастные кнопки в обеих темах
+    function renderClasses() {
+      const grid = $('#classGrid');
+      grid.innerHTML = '';
+      GRADES.forEach((g) => {
+        const b = document.createElement('button');
+        const active = state.grade === g;
+        b.className = 'class-btn rounded-2xl py-3.5 font-extrabold text-[15px] border-2 ' +
+          (active ? 'active border-transparent' : 'bg-slate-50 dark:bg-white/10 border-slate-200 dark:border-white/20 hover:border-indigo-400 dark:hover:border-indigo-300');
+        b.textContent = g + ' класс';
+        b.setAttribute('aria-label', g + ' класс');
+        b.onclick = () => {
+          state.grade = g;
+          state.para = null;
+          state.format = null;
+          renderClasses();
+          setTimeout(() => { const ps = $('#paraSearch'); if (ps) ps.value = ''; renderParagraphs(''); goStep(3); }, 220);
+        };
+        grid.appendChild(b);
+      });
+    }
+    const _ps = $('#paraSearch');
+    if (_ps) _ps.oninput = (e) => renderParagraphs(e.target.value);
+    $$('.backBtn').forEach((b) => { b.onclick = () => goStep(+b.dataset.back); });
+  </script>
+  <!-- Step 3+4 + result + PRO -->
+  <script>
+    // Шаг 3: параграфы (только после предмета и класса)
+    function renderParagraphs(filter = '') {
+      if (!state.subject || !state.grade) { goStep(!state.subject ? 1 : 2); return; }
+      $('#selInfo').textContent = state.subject + ' · ' + state.grade + ' класс';
+      const grid = $('#paraGrid');
+      grid.innerHTML = '';
+      const list = getParagraphs(state.subject, state.grade)
+        .filter((p) => (p.t + ' ' + p.d).toLowerCase().includes(filter.toLowerCase()));
+      list.forEach((p, idx) => {
+        const b = document.createElement('button');
+        const active = state.para === p.t;
+        b.className = 'para-btn text-left rounded-2xl border-2 p-4 transition bg-slate-50 dark:bg-white/5 ' +
+          (active ? '!border-indigo-500 ring-2 ring-indigo-200' : 'border-slate-200 dark:border-white/10 hover:border-indigo-300');
+        b.innerHTML =
+          '<div class="flex gap-3 items-start">' +
+            '<div class="w-9 h-9 shrink-0 grid place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 text-white font-extrabold text-sm">' + (idx + 1) + '</div>' +
+            '<div><div class="font-bold text-[14px]">' + p.t + '</div>' +
+            '<div class="text-[12px] text-slate-500 dark:text-slate-400 mt-1">' + p.d + '</div></div>' +
+          '</div>';
+        b.onclick = () => {
+          state.para = p.t;
+          state.format = null;
+          renderParagraphs($('#paraSearch') ? $('#paraSearch').value : '');
+          setTimeout(() => { renderMaterials(); goStep(4); }, 220);
+        };
+        grid.appendChild(b);
+      });
+      if (!grid.children.length) {
+        grid.innerHTML = '<div class="col-span-full text-center text-sm text-slate-400 py-6">Параграфы не найдены 😕</div>';
+      }
+    }
+
+    // Шаг 4: 4 формата — только после выбора параграфа
+    function renderMaterials() {
+      if (!state.subject || !state.grade || !state.para) { goStep(!state.subject ? 1 : (!state.grade ? 2 : 3)); return; }
+      $('#selParaInfo').textContent = state.subject + ' · ' + state.grade + ' класс · ' + state.para;
+      const grid = $('#matGrid');
+      grid.innerHTML = '';
+      getMaterials().forEach((m) => {
+        const b = document.createElement('button');
+        b.className = 'text-left rounded-2xl border-2 p-4 transition bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-indigo-400 hover:-translate-y-0.5';
+        b.innerHTML =
+          '<div class="flex gap-3 items-start">' +
+            '<div class="text-3xl">' + m.e + '</div>' +
+            '<div><div class="font-bold text-[14px]">' + m.t + '</div>' +
+            '<div class="text-[12px] text-slate-500 dark:text-slate-400 mt-1">' + m.d + '</div></div>' +
+          '</div>';
+        b.onclick = () => {
+          state.format = m.k;
+          setTimeout(() => showResult(m), 220);
+        };
+        grid.appendChild(b);
+      });
+    }
+
+    // Общие helpers (для всех предметов/классов)
+    function escHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function downloadTxt(filename, text) {
+      // Скачивание строго через JS, без сервера. Имя файла содержит номер параграфа.
+      const blob = new Blob(["\ufeff" + text], { type: 'text/plain;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 200);
+    }
+    // Планы-конспекты (История Беларуси, 11 класс): поиск СТРОГО по номеру §, форматирование и скачивание .txt
+    function hist11ParaNum() {
+      const m = /§\s*(\d+)/.exec(state.para || '');
+      return m ? parseInt(m[1], 10) : null;
+    }
+    function isHist11() {
+      return state.subject === 'История Беларуси в контексте всемирной истории' && state.grade === 11;
+    }
+    function getPlan11() {
+      // Ключевое требование: план выбирается по номеру параграфа, а не по индексу в списке,
+      // чтобы исключить сдвиг (например, параграф 7 не открывал текст §8).
+      const n = hist11ParaNum();
+      if (!isHist11() || !n) return null;
+      if (typeof PLANY_11 !== 'undefined' && PLANY_11[n]) return { num: n, text: String(PLANY_11[n]) };
+      return null;
+    }
+    function formatPlan11(text) {
+      const lines = String(text).split('\n');
+      let html = '';
+      let inSteps = false;
+      const closeSteps = () => { if (inSteps) { html += '</ol>'; inSteps = false; } };
+      lines.forEach((raw) => {
+        const t = raw.trim();
+        if (!t) return;
+        if (/^§\s*\d+\./.test(t)) {
+          closeSteps();
+          html += '<h4 class="font-bold text-base mb-2">' + escHtml(t) + '</h4>';
+          return;
+        }
+        if (/^(Цель урока|Задачи)\s*:/.test(t)) {
+          closeSteps();
+          const label = t.startsWith('Цель') ? '🎯 Цель урока' : '📌 Задачи';
+          html += '<div class="mt-3 rounded-xl border border-indigo-200 dark:border-indigo-400/30 bg-indigo-50 dark:bg-indigo-950/40 p-3"><div class="font-bold text-indigo-700 dark:text-indigo-200 text-[13px] mb-1">' + label + '</div><p class="text-[13px]">' + escHtml(t.replace(/^[^:]+:\s*/, '')) + '</p></div>';
+          return;
+        }
+        if (/^(Ключевые понятия|Даты|Личности)\s*:/.test(t)) {
+          closeSteps();
+          const mm = t.match(/^([^:]+):\s*(.*)$/);
+          const icons = { 'Ключевые понятия': '📚', 'Даты': '📅', 'Личности': '👤' };
+          html += '<div class="mt-2 rounded-xl border border-slate-200 dark:border-white/15 bg-slate-50 dark:bg-white/5 p-3"><div class="font-bold text-[13px] mb-1">' + (icons[mm[1]] || '•') + ' ' + escHtml(mm[1]) + '</div><p class="text-[13px]">' + escHtml(mm[2]) + '</p></div>';
+          return;
+        }
+        if (/^Ход урока/.test(t)) {
+          closeSteps();
+          html += '<h5 class="font-bold mt-4 mb-1 text-[14px]">📝 Ход урока</h5>';
+          return;
+        }
+        if (/^Домашнее задание\s*:/.test(t)) {
+          closeSteps();
+          html += '<div class="mt-3 rounded-xl border border-emerald-200 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 p-3"><div class="font-bold text-emerald-700 dark:text-emerald-200 text-[13px] mb-1">🏠 Домашнее задание</div><p class="text-[13px]">' + escHtml(t.replace(/^[^:]+:\s*/, '')) + '</p></div>';
+          return;
+        }
+        if (/^\d+\.\s/.test(t)) {
+          if (!inSteps) { html += '<ol class="mt-2 space-y-2 list-decimal ml-5 text-[13px]">'; inSteps = true; }
+          html += '<li>' + escHtml(t.replace(/^\d+\.\s*/, '')) + '</li>';
+          return;
+        }
+        if (/^[—–-]\s/.test(t)) {
+          html += '<p class="ml-4 text-[13px] text-slate-600 dark:text-slate-300">▸ ' + escHtml(t.replace(/^[—–-]\s*/, '')) + '</p>';
+          return;
+        }
+        html += '<p class="mb-1.5 text-[13px]">' + escHtml(t) + '</p>';
+      });
+      closeSteps();
+      return html;
+    }
+
+    function resultBodyFor(m) {
+      const head = state.subject + ' · ' + state.grade + ' класс · ' + state.para;
+      if (m.k === 'video') {
+        return '<div class="font-bold mb-2">🎬 Видеоурок · ' + head + '</div>' +
+          '<div class="rounded-xl overflow-hidden bg-slate-900 text-white p-6 text-center">▶ Демо-плеер<br><span class="text-[12px] opacity-70">10–15 мин · можно вставить YouTube / RuTube iframe для этого параграфа</span></div>' +
+          '<ol class="mt-3 space-y-1.5 list-decimal ml-5"><li>Смотрим введение и цели урока</li><li>Разбираем теорию с примерами</li><li>Закрепляем схемой и выводом</li></ol>';
+      }
+      if (m.k === 'plan') {
+        // Реальный контент только для Истории Беларуси, 11 класс; остальные — без изменений (заглушка).
+        const plan = getPlan11();
+        if (plan) {
+          return '<div class="font-bold mb-2">📝 План-конспект (подробный) · ' + head + '</div>' +
+            '<div class="text-left leading-relaxed bg-slate-50 dark:bg-white/5 border rounded-2xl p-5 max-h-[460px] overflow-y-auto">' + formatPlan11(plan.text) + '</div>' +
+            '<div class="flex flex-wrap gap-2 mt-4">' +
+            '<button onclick="downloadTxt(\'plan-konspekt-istoriya-11-par-' + plan.num + '.txt\', PLANY_11[' + plan.num + '])" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-bold">📥 Скачать план-конспект (.txt)</button>' +
+            '</div>';
+        }
+        return '<div class="font-bold mb-2">📝 План-конспект (подробный) · ' + head + '</div>' +
+          '<ol class="space-y-1.5 list-decimal ml-5"><li><b>Цель и понятия:</b> ключевые термины параграфа.</li><li><b>Теория по пунктам:</b> 4–6 блоков с объяснением.</li><li><b>Схемы и даты:</b> что вынести в тетрадь.</li><li><b>Примеры и связи:</b> как это спрашивают на ОГЭ/ЕГЭ.</li><li><b>Вывод:</b> 3 предложения для пересказа.</li></ol>' +
+          '<p class="mt-3 text-slate-500 dark:text-slate-400 text-[13px]">Демо-режим: полный текст подключается из базы. Структуру уже можно использовать на уроке.</p>';
+      }
+      if (m.k === 'short') {
+        const numMatch = /§\s*(\d+)/.exec(state.para || '');
+        const paraNum = numMatch ? parseInt(numMatch[1], 10) : null;
+        const isHist11 = state.subject === 'История Беларуси в контексте всемирной истории' && state.grade === 11;
+        const realText = (isHist11 && paraNum && typeof SHORT_CONSPECTS !== 'undefined' && SHORT_CONSPECTS[paraNum]) ? SHORT_CONSPECTS[paraNum] : null;
+        if (realText) {
+          const padNum = String(paraNum).padStart(2, '0');
+          return '<div class="font-bold mb-2">⚡ Краткий конспект · ' + head + '</div>' +
+            '<div class="text-left text-sm leading-relaxed bg-slate-50 dark:bg-white/5 border rounded-2xl p-5 max-h-[420px] overflow-y-auto">' + formatConspect(realText) + '</div>' +
+            '<div class="flex flex-wrap gap-2 mt-4">' +
+            '<a href="konspekty-istoriya-11/par-' + padNum + '.txt" download="konspekt-istoriya-11-par-' + paraNum + '.txt" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-bold">📥 Скачать краткий конспект (.txt)</a>' +
+            '<button onclick="downloadTxt(\'konspekt-istoriya-11-par-' + paraNum + '.txt\', SHORT_CONSPECTS[' + paraNum + '])" class="px-4 py-2 rounded-xl border-2 border-indigo-200 dark:border-white/20 text-sm font-bold">💾 Сохранить показанный текст в файл</button>' +
+            '</div>';
+        }
+        return '<div class="font-bold mb-2">⚡ Краткий конспект · ' + head + '</div>' +
+          '<ul class="space-y-1.5 list-disc ml-5"><li>Главное №1: определение одним предложением.</li><li>Главное №2: 2–3 факта, которые точно спросят.</li><li>Главное №3: формула / дата / карта.</li><li>Запомнить за минуту: ассоциация + повтор.</li></ul>';
+      }
+      return '<div class="font-bold mb-2">✅ Тест для закрепления · ' + head + '</div>' +
+        '<div class="space-y-2" id="demoQuiz">' +
+          '<div class="rounded-xl border p-3"><div class="font-bold text-[13px] mb-2">1. Что проверяем в этом параграфе в первую очередь?</div><div class="flex flex-wrap gap-2"><button onclick="toast(\'✅ Верно! Главное — определения.\')" class="px-3 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-[12px] font-bold">Определения</button><button onclick="toast(\'❌ Нет, это второстепенно\')" class="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/10 text-[12px] font-bold">Оформление тетради</button></div></div>' +
+          '<div class="rounded-xl border p-3"><div class="font-bold text-[13px] mb-2">2. Сколько минут повторить краткий конспект?</div><div class="flex flex-wrap gap-2"><button onclick="toast(\'✅ Да! 5 минут достаточно.\')" class="px-3 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-[12px] font-bold">5 минут</button><button onclick="toast(\'❌ Слишком долго для повторения\')" class="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/10 text-[12px] font-bold">60 минут</button></div></div>' +
+        '</div><p class="mt-2 text-[12px] text-slate-500 dark:text-slate-400">Демо-тест: полный банк из 10 вопросов подключается позже.</p>';
+    }
+
+    // Результат: выбранный формат по конкретному параграфу
+    function showResult(m) {
+      const locked = !isPro();
+      const chips = locked
+        ? ['🎬 Видео · демо', '📝 Конспекты · демо', '✅ Тест · демо', '🔒 Всё полностью — PRO']
+        : ['🎬 Видео открыто', '📝 Конспекты открыты', '⚡ Краткий конспект открыт', '✅ Тест открыт'];
+      $('#resultEmoji').textContent = m.e;
+      $('#resultTitle').textContent = m.t + ' готов!';
+      $('#resultText').textContent = state.subject + ' · ' + state.grade + ' класс · ' + state.para;
+      $('#resultBody').innerHTML = resultBodyFor(m);
+      $('#resultChips').innerHTML =
+        chips.map((c) => '<span class="text-[12px] font-bold bg-white dark:bg-white/10 border border-slate-200 dark:border-white/15 text-slate-700 dark:text-slate-100 rounded-full px-3.5 py-1.5 shadow-sm">' + c + '</span>').join('') +
+        (locked ? '<button onclick="openPro(\'month\')" class="text-[12px] font-extrabold text-slate-900 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full px-4 py-1.5 shadow">💎 Открыть всё с PRO</button>' : '');
+      goStep(5);
+      toast(locked ? '🎉 ' + m.t + ' готов (демо)!' : '👑 PRO: материал полностью открыт!');
+    }
+    const _rb = $('#resetBtn');
+    if (_rb) _rb.onclick = () => {
+      state.subject = state.grade = state.para = state.format = null;
+      $('#subjSearch').value = '';
+      const ps = $('#paraSearch'); if (ps) ps.value = '';
+      renderSubjects('');
+      renderClasses();
+      goStep(1);
+    };
+
+    // PRO: X = месяц, Y = навсегда (заглушки цен)
+    const PRICES = { month: 'X ₽', life: 'Y ₽' };
+    const isPro = () => localStorage.sh_pro === '1';
+
+    function openPro(plan) {
+      const m = $('#proModal');
+      $('#proTitle').textContent = plan === 'life' ? 'PRO Навсегда — ' + PRICES.life : 'PRO Месяц — ' + PRICES.month;
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+      requestAnimationFrame(() => {
+        m.classList.remove('opacity-0');
+        m.querySelector('.modal-card').classList.remove('scale-95');
+      });
+    }
+    function closePro() {
+      const m = $('#proModal');
+      m.classList.add('opacity-0');
+      m.querySelector('.modal-card').classList.add('scale-95');
+      setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
+    }
+    $$('.proBtn').forEach((b) => { b.onclick = () => openPro(b.dataset.pro); });
+    $$('#proModal [data-close]').forEach((b) => { b.onclick = closePro; });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePro(); });
+
+    // Demo payment: unlocks PRO locally
+    $('#proPay').onclick = () => {
+      const v = $('#proMail').value.trim();
+      if (!v || !v.includes('@')) {
+        toast('⚠️ Введи e-mail для чека');
+        return;
+      }
+      localStorage.sh_pro = '1';
+      closePro();
+      toast('👑 PRO активирован! Все видео, конспекты и тесты открыты');
+      syncPro();
+    };
+    function syncPro() {
+      const badge = $('#proBadge');
+      if (isPro() && !badge) {
+        const s = document.createElement('span');
+        s.id = 'proBadge';
+        s.className = 'hidden sm:inline-flex text-[12px] font-extrabold px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-slate-900';
+        s.textContent = '👑 PRO';
+        $('#themeToggle').after(s);
+      }
+      if (!isPro() && badge) badge.remove();
+    }
+    $('#goBtn').onclick = () => {
+      if (isPro()) toast('⚡ PRO: открываем все материалы...');
+      else openPro('month');
+    };
+
+    // Init
+    syncPro();
+    renderSubjects('');
+    renderClasses();
+    renderCrumbs(1);
+  </script>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 translate-y-24 opacity-0 transition-all duration-500 z-[80] bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-sm px-6 py-3.5 rounded-2xl shadow-2xl"></div>
+
+</body>
+</html>
+
